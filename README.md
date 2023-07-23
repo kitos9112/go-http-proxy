@@ -15,11 +15,9 @@ This tool is useful when you need to debug or inspect network requests, or to te
 - This tool is primarily for debugging and development purposes. It might not be suited for production-level traffic or security demands.
 - The proxy does not modify or interfere with the content of the traffic, it merely passes it along. This means it will not remove certain headers or modify request/response bodies.
 
-## Usage / Quickstart
+## Usage
 
-First, download the latest binary for your platform from the GitHub releases page. Then you can run the proxy with:
-
-By default, the proxy will start an HTTP server on port 8888. By default, the proxy will start an HTTP server on port 8888.
+By default, the proxy will start an HTTP server on port 8888.
 
 ```bash
 ./go-http-proxy --help
@@ -33,6 +31,19 @@ By default, the proxy will start an HTTP server on port 8888. By default, the pr
         Port to listen on (default "8888")
   -v    Increase verbosity
 ```
+
+## Get Started
+
+First, download the latest binary for your platform from the GitHub releases page. For example for Linux x64 or AMD64
+
+```bash
+curl -LOs https://github.com/kitos9112/go-http-proxy/releases/latest/download/go-http-proxy_Linux_x86_64.tar.gz
+tar -xzf go-http-proxy_Linux_x86_64.tar.gz
+./go-http-proxy -v &
+echo "All set! Now you can use the proxy on port 8888"
+```
+
+### Setting up a HTTPs Proxy
 
 To start an HTTPS server, use the `-https` flag and optionally provide paths to your certificate and key files.
 
