@@ -33,10 +33,6 @@ builds:
     # use commit date instead of current date as main.date
     # only needed if you actually use those things in your main package, otherwise can be ignored.
     - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }}
-# proxies from the go mod proxy before building
-# https://goreleaser.com/customization/gomod
-gomod:
-  proxy: true
 
 # config the checksum filename
 # https://goreleaser.com/customization/checksum
