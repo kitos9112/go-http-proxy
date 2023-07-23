@@ -58,8 +58,9 @@ func transfer(destination io.WriteCloser, source io.ReadCloser) {
 	defer destination.Close()
 	defer source.Close()
 	_, err := io.Copy(destination, source)
-	if err != nil && *verbose {
+	if err != nil {
 		log.Println("Error while transferring data:", err)
+		return  // Return without crashing the server.
 	}
 }
 

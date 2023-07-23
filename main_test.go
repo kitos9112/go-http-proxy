@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"net/http/httptest"
+	"fmt"
+	"io"
+	"crypto/tls"
 )
 
 func TestCopyHeader(t *testing.T) {
