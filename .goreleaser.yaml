@@ -2,6 +2,11 @@
 # Make sure to check the documentation at https://goreleaser.com
 project_name: go-http-proxy
 
+# proxies from the go mod proxy before building
+# https://goreleaser.com/customization/gomod
+gomod:
+  proxy: true
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
