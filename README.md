@@ -40,16 +40,17 @@ First, download the latest binary for your platform from the GitHub releases pag
 curl -LOs https://github.com/kitos9112/go-http-proxy/releases/latest/download/go-http-proxy_Linux_x86_64.tar.gz
 tar -xzf go-http-proxy_Linux_x86_64.tar.gz
 ./go-http-proxy -v &
-echo "All set! Now you can use the proxy on port 8888"
+echo "All set! Now you can use the proxy on  http://localhost:8888"
+curl -k --proxy http://localhost:8888 https://google.com -I
 ```
 
 ### Setting up a HTTPs Proxy
 
-To start an HTTPS server, use the `-https` flag and optionally provide paths to your certificate and key files.
+To start a HTTPS server, use the `-https` flag and optionally provide paths to your certificate and key files.
 
 If `key` and `cert` paths are not passed, the program will generate a self-signed certificate and key with a CNAME and DNS SAN of `localhost` for easy DNS resolution during local tests. The x509 cert will be written to disk in the current directory as `cert.pem` - No key will be exported though.
 
-You'd either have to add this cert to the `ca-certificates` store on your local machine, or avoid verifying the cert from the client.
+You'd either have to add this cert to the `ca-certificates` store on your local machine, or avoid verifying the cert at all from the client.
 
 An example on how to use this proxy with a self-signed certificate and then importing to the local CA store on Ubuntu:
 
