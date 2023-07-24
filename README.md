@@ -9,6 +9,7 @@ This tool is useful when you need to debug or inspect network requests, or to te
 - Supports both HTTP and HTTPS. Forwards HTTPS traffic using the HTTP CONNECT method.
 - Provides an option to increase verbosity to log detailed information about the traffic.
 - Supports custom TLS certificates (`-cert` and `-key` flags).
+- Auto-generates a self-signed x509 certificate for local development.
 
 ## Limitations
 
