@@ -122,7 +122,7 @@ func main() {
 					CommonName: "localhost",
 				},
 				DNSNames : []string{"localhost"},
-				NotBefore:             time.Now(),
+				NotBefore:             time.Now().AddDate(0, 0, -1), // Valid from one day before
 				NotAfter:              time.Now().Add(time.Hour * 24 * 365), // Valid for one year.
 				BasicConstraintsValid: true,
 			}
