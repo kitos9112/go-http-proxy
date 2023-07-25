@@ -60,7 +60,7 @@ func transfer(destination io.WriteCloser, source io.ReadCloser) {
 	_, err := io.Copy(destination, source)
 	if err != nil {
 		log.Println("Error while transferring data:", err)
-		return  // Return without crashing the server.
+		return // Return without crashing the server.
 	}
 }
 
@@ -88,6 +88,34 @@ func copyHeader(dst, src http.Header) {
 	}
 }
 
+func genTlsCert() *tls.Config {
+	// Generate a new self-signed certificate.
+	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
+	template := x509.Certificate{
+		SerialNumber: big.NewInt(2024),
+		Subject: pkix.Name{
+			CommonName: "localhost",
+		},
+		DNSNames:              []string{"localhost"},
+		NotBefore:             time.Now().AddDate(0, 0, -1),         // Valid from one day before
+		NotAfter:              time.Now().Add(time.Hour * 24 * 365), // Valid for one year.
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature,
+		BasicConstraintsValid: true,
+	}
+
+	certDER, _ := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
+
+	// Write the certificate to file.
+	if err := os.WriteFile("cert.pem", certPEM, 0644); err != nil {
+		log.Fatalf("Failed to write certificate: %v", err)
+	}
+
+	cert, _ := tls.X509KeyPair(certPEM, keyPEM)
+	return &tls.Config{Certificates: []tls.Certificate{cert}}
+}
 
 func main() {
 	flag.Parse()
@@ -114,36 +142,14 @@ func main() {
 
 			tlsConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
 		} else {
-			// Generate a new self-signed certificate.
-			priv, _ := rsa.GenerateKey(rand.Reader, 2048)
-			template := x509.Certificate{
-				SerialNumber: big.NewInt(1),
-				Subject: pkix.Name{
-					CommonName: "localhost",
-				},
-				DNSNames : []string{"localhost"},
-				NotBefore:             time.Now().AddDate(0, 0, -1), // Valid from one day before
-				NotAfter:              time.Now().Add(time.Hour * 24 * 365), // Valid for one year.
-				BasicConstraintsValid: true,
-			}
-
-			certDER, _ := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
-			certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
-			keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
-
-			// Write the certificate and key to files.
-      if err := os.WriteFile("cert.pem", certPEM, 0644); err != nil {
-          log.Fatalf("Failed to write certificate: %v", err)
-      }
-
-			cert, _ := tls.X509KeyPair(certPEM, keyPEM)
-			tlsConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
+			tlsConfig = genTlsCert()
 		}
 
 		server.TLSConfig = tlsConfig
 
 		log.Println("Starting HTTPS server on", server.Addr)
 		log.Fatal(server.ListenAndServeTLS("", ""))
+
 	} else {
 		log.Println("Starting HTTP server on", server.Addr)
 		log.Fatal(server.ListenAndServe())
